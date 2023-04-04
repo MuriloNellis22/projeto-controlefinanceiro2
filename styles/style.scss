@@ -1,0 +1,162 @@
+$cor-primaria: #531f66;
+$cor-secundaria: #8300b3;
+$cor-texto: #ffff;
+
+@mixin button-style() {
+    float: right;
+    border: none;
+    margin: 15px 15px 5px 0px;
+    padding: 15px;
+    border-radius: 5px;
+    background-color: $cor-secundaria;
+    color: $cor-texto;
+    font-weight: bold;
+    @content;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: $cor-primaria;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h1 {
+    padding: 8px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    font-size: x-large;
+    background-color: $cor-secundaria;
+    color: $cor-texto;
+}
+
+section {
+    display: flex;
+    margin: 0px 0px 15px 0px;
+    height: 300px;
+    width: 100%;
+    padding: 10px;
+    border-radius: 0px 0px 18px 18px;
+    font-weight: bold;
+    font-size: medium;
+    box-sizing: border-box;
+    background-color: $cor-secundaria;
+    color: $cor-texto;
+    .box-value {
+        flex-direction: row;
+        text-align: center;
+        margin: 15px auto;
+        padding: 15px;
+        height: 150px;
+        width: 150px;
+        background-color: $cor-primaria;
+        border-radius: 5px;
+        div {
+            font-size: x-large;
+            margin-top: 45px;
+        }
+    }
+}
+
+#add-btn {
+    @include button-style();
+    &:hover {
+        opacity: 0.7;
+        cursor: pointer;
+        transition-duration: 0.5s;
+    }
+}
+
+dialog {
+    box-sizing: border-box;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    border-radius: 8px;
+    margin: auto;
+    width: 500px;
+    height: 250px;
+    padding: 25px;
+    background-color: #bcbcbc;
+    form {
+        margin: 17px auto;
+        font-weight: bold;
+        font-size: large;
+        color: $cor-primaria;
+        input {
+            background-color: #bcbcbc;
+            outline: none;
+            border: none none 2px none solid #0000;
+            border-radius: 4px;
+            &:focus {
+                border-color: $cor-secundaria;
+            }
+        }
+        input, label, button {
+            font-weight: bold;
+            font-size: large;
+            color: $cor-primaria;
+        }
+    }
+    #add-btn2 {
+        @include button-style() {
+            &:hover {
+                opacity: 0.7;
+                cursor: pointer;
+            }
+        }
+    }
+    #close-btn {
+        @include button-style() {
+            background-color: #ffff;
+            color: $cor-secundaria;
+            border: 2px solid $cor-secundaria;
+            &:hover {
+                opacity: 0.7;
+                cursor: pointer;
+            }
+        }
+    }
+    #nome-valor, #valor {
+        margin-bottom: 15px;
+        display: inline-block;
+        flex-direction: column;
+    }
+    label[for='entrada'] {
+        margin-right: 17px;
+    }
+    #saida {
+        margin: 15px 0px 15px 0px;
+    }
+    &::backdrop {
+        background-color: rgb(0 0 0 / .3);
+    }
+}
+
+#list, .emptyList {
+    margin: 150px auto;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    p {
+        color: $cor-texto;
+        font-weight: bold;
+        font-size: x-large;
+        padding: 16px;
+        text-align: center;
+        margin: 8px auto;
+    }
+}
+
+.fa-sharp .fa-solid .fa-arrow-up{
+    color: #05d505;
+}
+
+.fa-sharp .fa-solid .fa-arrow-down {
+    color: #f90808;
+}

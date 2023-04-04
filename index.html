@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+    <h1>Controle financeiro</h1>
+    <section>
+        <div class="box-value">
+          <label for="receitas">Receitas:</label>
+          <div id="valor-Receitas" style="color: #18ff18;">R$0,00</div>
+        </div>
+
+        <div class="box-value">
+          <label for="despesas">Despesas:</label>
+          <div id="valor-Despesas" style="color: #ff1515;">R$0,00</div>
+        </div>
+
+        <div class="box-value">
+          <label for="saldo">Saldo:</label>
+          <div id="valor-Saldo">R$0,00</div>
+        </div>
+
+    </section>
+
+    <button id="add-btn">Adicionar valor +</button>
+
+    <dialog>
+      <form>
+        Valor: <input type="text" name="valor" id="valor" placeholder="Ex: 2.50"><br>
+        Referente a: <input type="text" name="nome-valor" id="nome-valor" placeholder="Ex: mercado, farmácia etc"><br>
+        <input type="radio" name="radio-value" id="entrada"></input>
+        <label for="entrada">Entrada</label>
+        <input type="radio" name="radio-value" id="saida"></input>
+        <label for="saida">Saída</label>
+        <br>
+        <button id="add-btn2">Adicionar</button>
+        <button id="close-btn">Fechar</button>
+      </form>
+    </dialog>
+
+    <div id="list">
+      <p id="p-empty">Não há elementos na lista no momento.</p>
+    </div>
+
+    <script type="module" src="/src/index.js"></script>
+  </body>
+</html>
