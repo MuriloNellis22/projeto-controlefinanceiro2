@@ -1,9 +1,17 @@
 export default class Modal {
     modal;
     valores;
-    constructor(modal, valores) {
+    receitas;
+    despesas;
+    saldo;
+    index;
+    constructor(receitas, despesas, saldo, modal, valores, index) {
         this.modal = modal;
+        this.receitas = receitas;
+        this.despesas = despesas;
+        this.saldo = saldo;
         this.valores = valores;
+        this.index = index;
         this.valores.length === 0 ? "<p>Não há itens na lista no momento.</p>" : this.createList();
     }
     openModal() {
@@ -35,6 +43,7 @@ export default class Modal {
         this.valores.push(list);
         console.log(this.valores);
         this.createList();
+        this.refreshBoxValues(this.index);
         return this.valores;
     }
     /**
@@ -70,9 +79,31 @@ export default class Modal {
             lista.removeChild(textoLista);
         }
         lista.classList.add("list");
-        return this.valores.map((item, index) => {
-            //index += 1
+        return this.valores.forEach((item, index) => {
+            index++;
             lista.innerHTML += `<p><span>${item.valor[index]}</span><span>${item.nomeValor[index]}</span><span>${item.checked ? item.checked[index] : null}}</span><i class="fa-thin fa-xmark"></i></p>`;
         });
+    }
+    /**
+     * Atualiza o valor das caixas "receitas", "despesas" e "saldo".
+     */
+    refreshBoxValues(index, el) {
+        let newReceita = this.normalizeNumbers(+this.receitas);
+        let newDespesa = this.normalizeNumbers(+this.despesas);
+        let newSaldo = this.normalizeNumbers(+this.saldo);
+        if (this.valores.length === 0) {
+            newReceita = 'R$0,00';
+            newDespesa = 'R$0,00';
+            newSaldo = 'R$0,00';
+        }
+        else if (el.value === 'enterChecked') {
+            index++;
+            newReceita += this.valores[index].valor;
+            newSaldo += this.valores[index].valor;
+        }
+        else if (el.value === 'leftChecked') {
+            index++;
+            newDespesa -= this.valores[index].valor;
+        }
     }
 }

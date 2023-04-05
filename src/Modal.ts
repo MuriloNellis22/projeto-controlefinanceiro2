@@ -10,14 +10,14 @@ export default class Modal {
     receitas;
     despesas;
     saldo;
-    list;
-    constructor(receitas: Element, despesas: Element, saldo: Element, modal: HTMLDialogElement | null, valores: Array<Obj>, list: Obj) {
+    index;
+    constructor(receitas: Element, despesas: Element, saldo: Element, modal: HTMLDialogElement | null, valores: Array<Obj>, index: number) {
         this.modal = modal
         this.receitas = receitas
         this.despesas = despesas
         this.saldo = saldo
         this.valores = valores
-        this.list = list
+        this.index = index
 
         this.valores.length === 0 ? "<p>Não há itens na lista no momento.</p>" : this.createList()
     }
@@ -42,7 +42,7 @@ export default class Modal {
             alert('Preencha todos os campos para continuar.') 
             return undefined
             }
-            this.list = {
+            const list: Obj = {
                 valor: this.normalizeNumbers(+inputValue.value),
                 nomeValor: String(inputNameValue.value),
                 checked: enterChecked.checked ? '<i class="fa-sharp fa-solid fa-arrow-up"></i>' : leftChecked.checked ? '<i class="fa-sharp fa-solid fa-arrow-down"></i>' : undefined
@@ -51,9 +51,10 @@ export default class Modal {
         inputNameValue.value = ''
         if (enterChecked.checked) enterChecked.checked = false
         else if (leftChecked.checked) leftChecked.checked = false
-        this.valores.push(this.list)
+        this.valores.push(list)
         console.log(this.valores)
         this.createList()
+        this.refreshBoxValues(this.index, list.checked)
         return this.valores
     }
 
@@ -98,30 +99,32 @@ export default class Modal {
 
         lista.classList.add("list")
 
-        function gerarLista(el: HTMLDivElement, arr: Obj[], item: Obj) {
-            for (let index = 0; arr.length > 0; index++) {
-                el.innerHTML += `<p><span>${item.valor[index]}</span><span>${item.nomeValor[index]}</span><span>${item.checked ? item.checked[index] : null}}</span><i class="fa-thin fa-xmark"></i></p>`
-              }
-        }
-        return gerarLista(lista, this.valores, this.list)
+        return this.valores.forEach((item, index) => {
+            index++
+            lista.innerHTML += `<p><span>${item.valor[index]}</span><span>${item.nomeValor[index]}</span><span>${item.checked ? item.checked[index] : null}}</span><i class="fa-thin fa-xmark"></i></p>`;
+        });
     }
 
     /**
      * Atualiza o valor das caixas "receitas", "despesas" e "saldo".
      */
-    private refreshBoxValues(index: number) {
-        let newReceita = String(this.receitas)
-        let newDespesa = String(this.despesas)
-        let newSaldo = String(this.saldo)
+    private refreshBoxValues(index: number, el: string): void {
+        let newReceita = this.normalizeNumbers(+this.receitas)
+        let newDespesa = this.normalizeNumbers(+this.despesas)
+        let newSaldo = this.normalizeNumbers(+this.saldo)
         if (this.valores.length === 0) {
             newReceita = 'R$0,00'
             newDespesa = 'R$0,00'
             newSaldo = 'R$0,00'
-        } else {
+        } else if (el === enterChecked) {
             index++
-            newReceita = this.normalizeNumbers(+newReceita) + this.valores[index].valor
-            newDespesa = this.normalizeNumbers(+newDespesa) + this.valores[index].valor
+            newReceita += this.valores[index].valor
+            newSaldo += this.valores[index].valor
+        } else if (el.value === 'leftChecked') {
+            index++
+            newDespesa = newDespesa - this.valores[index].valor
+            newSaldo -= this.valores[index].valor
         }
-    } 
+    }
 
 }

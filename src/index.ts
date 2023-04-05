@@ -14,14 +14,9 @@ const form = document.querySelector('form')
 const button2 = document.getElementById('add-btn2')
 
 let valores: Array<Obj> = []
-let valor: Obj = {
-    valor: "",
-    nomeValor: "",
-    checked: undefined
-}
 
 if (valorReceitas && valorDespesas && valorSaldo && button && closeButton && dialog && button2 && form) {
-    const modal = new Modal(valorReceitas, valorDespesas, valorSaldo, dialog, valores, valor)
+    const modal = new Modal(valorReceitas, valorDespesas, valorSaldo, dialog, valores, 0)
     button.addEventListener('click', () => modal.openModal())
     closeButton.addEventListener('click', () => modal.closeModal())
     button2.addEventListener('click', () => modal.addValues())
