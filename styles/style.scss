@@ -153,10 +153,41 @@ dialog {
     }
 }
 
-.fa-sharp .fa-solid .fa-arrow-up{
-    color: #05d505;
+.arrowUp-icon {
+    color: #18ff18;
 }
 
-.fa-sharp .fa-solid .fa-arrow-down {
-    color: #f90808;
+.arrowDown-icon {
+    color: #ff1515;
+}
+
+.itemValues {
+    display: flex;
+    height: 100px;
+    width: 535px;
+    margin: 15px auto;
+    text-align: center;
+    align-items: center;
+    justify-content: space-evenly;
+    background-color: $cor-secundaria;
+    border-radius: 8px;
+    padding: 18px;
+    font-size: x-large;
+    font-weight: bold;
+    span {
+        color: $cor-texto;
+    }
+    label {
+        font-size: medium;
+        margin-bottom: 10px;
+        color: $cor-texto;
+    }
+    span #item-checked {
+        margin-right: 40px;
+    }
+    .trash-icon:hover {
+        color: #ff1515;
+        transition-duration: 0.2s;
+        cursor: pointer;
+    }
 }

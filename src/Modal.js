@@ -1,18 +1,21 @@
 export default class Modal {
     modal;
-    valores;
     receitas;
     despesas;
     saldo;
-    index;
-    constructor(receitas, despesas, saldo, modal, valores, index) {
+    valores;
+    constructor(receitas, despesas, saldo, modal, valores) {
         this.modal = modal;
         this.receitas = receitas;
         this.despesas = despesas;
         this.saldo = saldo;
         this.valores = valores;
-        this.index = index;
-        this.valores.length === 0 ? "<p>Não há itens na lista no momento.</p>" : this.createList();
+        if (this.valores.length === 0) {
+            this.receitas.innerText = 'R$ 0,00';
+            this.despesas.innerText = 'R$ 0,00';
+            this.saldo.innerText = 'R$ 0,00';
+        }
+        //this.valores.length === 0 ? "<p>Não há itens na lista no momento.</p>" : this.createList()
     }
     openModal() {
         this.modal?.showModal();
@@ -29,21 +32,24 @@ export default class Modal {
             alert('Preencha todos os campos para continuar.');
             return undefined;
         }
-        const list = {
+        let list = {
+            id: Math.random(),
             valor: this.normalizeNumbers(+inputValue.value),
             nomeValor: String(inputNameValue.value),
-            checked: enterChecked.checked ? '<i class="fa-sharp fa-solid fa-arrow-up"></i>' : leftChecked.checked ? '<i class="fa-sharp fa-solid fa-arrow-down"></i>' : undefined
+            checked: enterChecked.checked ? '<i class="fa-sharp fa-solid fa-arrow-up arrowUp-icon"></i>' : leftChecked.checked ? '<i class="fa-sharp fa-solid fa-arrow-down arrowDown-icon"></i>' : undefined
         };
         inputValue.value = '';
         inputNameValue.value = '';
+        this.getAmount(list);
+        const trash = document.querySelector('.trash-icon');
+        trash?.addEventListener('click', () => this.removeItem(list.id));
         if (enterChecked.checked)
             enterChecked.checked = false;
         else if (leftChecked.checked)
             leftChecked.checked = false;
         this.valores.push(list);
-        console.log(this.valores);
         this.createList();
-        this.refreshBoxValues(this.index);
+        this.closeModal();
         return this.valores;
     }
     /**
@@ -79,31 +85,52 @@ export default class Modal {
             lista.removeChild(textoLista);
         }
         lista.classList.add("list");
-        return this.valores.forEach((item, index) => {
-            index++;
-            lista.innerHTML += `<p><span>${item.valor[index]}</span><span>${item.nomeValor[index]}</span><span>${item.checked ? item.checked[index] : null}}</span><i class="fa-thin fa-xmark"></i></p>`;
+        return this.valores.map((item) => {
+            lista.innerHTML += `<div class="itemValues">
+
+             <label for="item-valor">Valor:</label>
+             <span id="item-valor">${item.valor}</span>
+             
+             <label for="item-nomeValor">Referente a:</label>
+             <span id="item-nomeValor">${item.nomeValor}</span>
+             
+             <label for="item-checked">Tipo:</label>
+             <span id="item-checked">${item.checked ? item.checked : null}</span>
+
+             <i class="fa-solid fa-trash trash-icon"></i>
+            </div>`;
         });
     }
-    /**
-     * Atualiza o valor das caixas "receitas", "despesas" e "saldo".
-     */
-    refreshBoxValues(index, el) {
-        let newReceita = this.normalizeNumbers(+this.receitas);
-        let newDespesa = this.normalizeNumbers(+this.despesas);
-        let newSaldo = this.normalizeNumbers(+this.saldo);
-        if (this.valores.length === 0) {
-            newReceita = 'R$0,00';
-            newDespesa = 'R$0,00';
-            newSaldo = 'R$0,00';
+    getAmount(list) {
+        const positiveValue = this.valores.filter((item) => {
+            item.checked == 'enterChecked';
+        });
+        const negativeValue = this.valores.filter((item) => {
+            item.checked == 'leftChecked';
+        });
+        if (list.checked == 'enterChecked') {
+            positiveValue.reduce((acc, curr) => {
+                let receitasValue = acc + curr.valor;
+                return receitasValue;
+            }, this.receitas.value);
+            this.receitas.innerText += this.normalizeNumbers(+positiveValue);
+            this.saldo.innerText += this.normalizeNumbers(+positiveValue);
         }
-        else if (el.value === 'enterChecked') {
-            index++;
-            newReceita += this.valores[index].valor;
-            newSaldo += this.valores[index].valor;
+        else if (list.checked == 'leftChecked') {
+            negativeValue.reduce((acc, curr) => {
+                let despesasValue = acc + curr.valor;
+                return despesasValue;
+            }, this.despesas.value);
+            this.despesas.innerText = this.normalizeNumbers(+negativeValue);
+            this.saldo.innerText = -this.normalizeNumbers(+positiveValue) - -this.normalizeNumbers(+negativeValue);
         }
-        else if (el.value === 'leftChecked') {
-            index++;
-            newDespesa -= this.valores[index].valor;
-        }
+    }
+    removeItem(index) {
+        const lista = document.querySelector('#list');
+        lista.innerHTML += this.valores.filter((item) => {
+            !(item.id === index);
+        });
+    }
+    addNumbers() {
     }
 }

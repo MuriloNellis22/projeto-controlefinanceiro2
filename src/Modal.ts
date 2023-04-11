@@ -1,4 +1,5 @@
 export interface Obj {
+    id: number;
     valor: string;
     nomeValor: string;
     checked: string | undefined;
@@ -6,20 +7,24 @@ export interface Obj {
 
 export default class Modal {
     modal;
-    valores;
     receitas;
     despesas;
     saldo;
-    index;
-    constructor(receitas: Element, despesas: Element, saldo: Element, modal: HTMLDialogElement | null, valores: Array<Obj>, index: number) {
+    valores;
+    constructor(receitas: HTMLInputElement, despesas: HTMLInputElement, saldo: HTMLInputElement, modal: HTMLDialogElement | null, valores: Array<Obj>) {
         this.modal = modal
         this.receitas = receitas
         this.despesas = despesas
         this.saldo = saldo
         this.valores = valores
-        this.index = index
 
-        this.valores.length === 0 ? "<p>Não há itens na lista no momento.</p>" : this.createList()
+        if (this.valores.length === 0) {
+            this.receitas.innerText = 'R$ 0,00'
+            this.despesas.innerText = 'R$ 0,00'
+            this.saldo.innerText = 'R$ 0,00'
+        }
+
+        //this.valores.length === 0 ? "<p>Não há itens na lista no momento.</p>" : this.createList()
     }
     public openModal(): void {
         this.modal?.showModal()
@@ -42,19 +47,29 @@ export default class Modal {
             alert('Preencha todos os campos para continuar.') 
             return undefined
             }
-            const list: Obj = {
+            let list: Obj = {
+                id: Math.random(),
                 valor: this.normalizeNumbers(+inputValue.value),
                 nomeValor: String(inputNameValue.value),
-                checked: enterChecked.checked ? '<i class="fa-sharp fa-solid fa-arrow-up"></i>' : leftChecked.checked ? '<i class="fa-sharp fa-solid fa-arrow-down"></i>' : undefined
+                checked: enterChecked.checked ? '<i class="fa-sharp fa-solid fa-arrow-up arrowUp-icon"></i>' : leftChecked.checked ? '<i class="fa-sharp fa-solid fa-arrow-down arrowDown-icon"></i>' : undefined
         }
         inputValue.value = ''
         inputNameValue.value = ''
+
+        this.getAmount(list)
+
+        const trash = document.querySelector('.trash-icon')
+
+        trash?.addEventListener('click', () => this.removeItem(list.id))
+
         if (enterChecked.checked) enterChecked.checked = false
         else if (leftChecked.checked) leftChecked.checked = false
+
         this.valores.push(list)
-        console.log(this.valores)
         this.createList()
-        this.refreshBoxValues(this.index, list.checked)
+
+        this.closeModal()
+
         return this.valores
     }
 
@@ -99,32 +114,63 @@ export default class Modal {
 
         lista.classList.add("list")
 
-        return this.valores.forEach((item, index) => {
-            index++
-            lista.innerHTML += `<p><span>${item.valor[index]}</span><span>${item.nomeValor[index]}</span><span>${item.checked ? item.checked[index] : null}}</span><i class="fa-thin fa-xmark"></i></p>`;
+        return this.valores.map((item) => {
+            lista.innerHTML += `<div class="itemValues">
+
+             <label for="item-valor">Valor:</label>
+             <span id="item-valor">${item.valor}</span>
+             
+             <label for="item-nomeValor">Referente a:</label>
+             <span id="item-nomeValor">${item.nomeValor}</span>
+             
+             <label for="item-checked">Tipo:</label>
+             <span id="item-checked">${item.checked ? item.checked : null}</span>
+
+             <i class="fa-solid fa-trash trash-icon"></i>
+            </div>`;
         });
     }
 
-    /**
-     * Atualiza o valor das caixas "receitas", "despesas" e "saldo".
-     */
-    private refreshBoxValues(index: number, el: string): void {
-        let newReceita = this.normalizeNumbers(+this.receitas)
-        let newDespesa = this.normalizeNumbers(+this.despesas)
-        let newSaldo = this.normalizeNumbers(+this.saldo)
-        if (this.valores.length === 0) {
-            newReceita = 'R$0,00'
-            newDespesa = 'R$0,00'
-            newSaldo = 'R$0,00'
-        } else if (el === enterChecked) {
-            index++
-            newReceita += this.valores[index].valor
-            newSaldo += this.valores[index].valor
-        } else if (el.value === 'leftChecked') {
-            index++
-            newDespesa = newDespesa - this.valores[index].valor
-            newSaldo -= this.valores[index].valor
+    private getAmount(list: Obj) {
+        const positiveValue = this.valores.filter((item) => {
+            item.checked == 'enterChecked'
+        })
+
+        const negativeValue = this.valores.filter((item) => {
+            item.checked == 'leftChecked'
+        })
+        
+        if (list.checked == 'enterChecked') {
+            positiveValue.reduce((acc, curr) => {
+                let receitasValue = this.addNumbers(acc, curr.valor)
+                return receitasValue
+            }, this.receitas.value)
+            this.receitas.innerText += this.normalizeNumbers(+positiveValue)
+            this.saldo.innerText += this.normalizeNumbers(+positiveValue)
+        } else if (list.checked == 'leftChecked') {
+            negativeValue.reduce((acc, curr) => {
+                let despesasValue = this.addNumbers(acc.valor, curr.valor)
+                return despesasValue
+            }, this.despesas.value)
+            this.despesas.innerText = this.normalizeNumbers(+negativeValue)
+            this.saldo.innerText = -this.normalizeNumbers(+positiveValue) - -this.normalizeNumbers(+negativeValue)
         }
     }
 
+    private removeItem(index: number) {
+        const lista = document.querySelector('#list') as HTMLDivElement
+        lista.innerHTML += this.valores.filter((item) => {
+            !(item.id === index)
+        })
+    }
+
+    private addNumbers(value1: number | string, value2: number | string) {
+        if (typeof value1 === "number" && typeof value2 === "number") {
+            const newValue = value1 + value2
+            return this.normalizeNumbers(newValue)
+        } else if (typeof value1 === "number" && typeof value2 === 'number') {
+            const newValue = Number(value1 + value2)
+            return this.normalizeNumbers(newValue)
+        }
+    }
 }
